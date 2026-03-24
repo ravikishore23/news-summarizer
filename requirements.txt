@@ -2,4 +2,6 @@ flask
 gunicorn
 requests
 flask-cors
-python-dotenv
+beautifulsoup4
+openai
+python-dotenv 
