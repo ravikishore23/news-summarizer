@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from scraper import scrape_url
 from openai import OpenAI
 from dotenv import load_dotenv
+from flask_cors import CORS
 import os
 load_dotenv(override=True)
 
