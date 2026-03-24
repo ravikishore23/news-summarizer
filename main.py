@@ -19,7 +19,7 @@ def summarize(text, style):
 
 
     response = client.chat.completions.create(
-        model= os.getenv("gpt:20b"),
+        model= "gpt-oss:120b-cloud" ,
         messages=[
             {"role": "system", "content": "You are a professional news summarizer. Read the article content and summarize it clearly and accurately."},
             {"role": "user",   "content": f"{instruction}\n\nArticle content:\n{text[:3000]}"}
