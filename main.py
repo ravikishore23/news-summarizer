@@ -7,10 +7,7 @@ import os
 load_dotenv(override=True)
 
 app = Flask(__name__)
-client = OpenAI(
-    api_key=os.environ.get("OPENAI_API_KEY"),
-    base_url="https://api.openai.com/v1"
-)
+client = OpenAI()
 
 def summarize(text, style):
     prompts = {
