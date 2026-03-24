@@ -1,7 +1,3 @@
-Flask
-os
-dotenv
-openai
 flask
 gunicorn
 requests
