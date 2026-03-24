@@ -2,3 +2,8 @@ Flask
 os
 dotenv
 openai
+flask
+gunicorn
+requests
+flask-cors
+python-dotenv
