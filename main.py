@@ -7,7 +7,10 @@ import os
 load_dotenv(override=True)
 
 app = Flask(__name__)
-client = OpenAI()
+client = OpenAI(
+    base_url="https://ollama.com/v1",       # Official Ollama Cloud Endpoint
+    api_key=os.getenv("OLLAMA_API_KEY")
+)
 
 def summarize(text, style):
     prompts = {
