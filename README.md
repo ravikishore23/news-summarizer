@@ -2,7 +2,7 @@
 
 A web app that scrapes any news article or webpage and summarizes it using AI — supports both **cloud deployment with Ollama free API** and **local LLM via Ollama** on your own machine.
 
-🌐 **Live Demo**: [your-app.onrender.com](https://your-app.onrender.com)
+🌐 **Live Demo**: [your-app.onrender.com](https://news-summarizer-p5pg.onrender.com/)
 
 ---
 
