@@ -1,27 +1,31 @@
 # NewsBrief — AI News Summarizer
 
-A web app that scrapes any news article or webpage and summarizes it using a **local LLM via Ollama** — completely free, no API costs, runs 100% on your machine.
+A web app that scrapes any news article or webpage and summarizes it using AI — supports both **cloud deployment with Ollama free API** and **local LLM via Ollama** on your own machine.
+
+🌐 **Live Demo**: [your-app.onrender.com](https://your-app.onrender.com)
 
 ---
 
-Screenshots
-Home — paste any article URL
+## Screenshots
+
+**Home — paste any article URL**
 
 ![NewsBrief Home](screenshots/home.png)
-
-Summarizing news by local llm (gpt-oss-safeguard)
+**Loading — AI-Generating summary**
 
 ![NewsBrief Home](screenshots/loading.png)
 
-Result — AI-generated summary
+**Result — AI-generated summary**
 
-![NewsBrief result](screenshots/result.png)
+![NewsBrief Result](screenshots/result.png)
+
+---
 
 ## Features
 
-- Paste any article URL and get an instant summary
+- Paste any news/article URL and get an instant summary
 - 4 summary styles — bullet points, quick, detailed, explain simply
-- Powered by your local Ollama model (no OpenAI costs)
+- Supports Ollama free API (cloud) or local LLM (your machine)
 - Clean newspaper-style UI
 - Works with Wikipedia, news sites, blogs, and more
 
@@ -29,22 +33,43 @@ Result — AI-generated summary
 
 ## Tech Stack
 
-- **Backend** — Python, Flask
+- **Backend** — Python, Flask, Gunicorn
 - **Scraping** — requests, BeautifulSoup4
-- **LLM** — Ollama (local) via OpenAI-compatible API
+- **LLM** — Ollama API (cloud) or local Ollama model
 - **Frontend** — HTML, CSS, vanilla JavaScript
+- **Hosting** — Render
 
 ---
 
-## Requirements
+## Two Ways to Run
 
-- Python 3.10+
-- [Ollama](https://ollama.com) installed and running
-- A pulled Ollama model (e.g. `llama3.2`, `mistral`)
+### Approach 1 — Hosted on Render (Ollama free API)
+
+The live demo uses Ollama's free cloud API — no local model needed, works from any device.
+
+```env
+OPENAI_API_KEY=your-ollama-api-key
+OPENAI_BASE_URL=https://api.ollama.ai/v1
+MODEL_NAME=gpt-oss-20b-cloud
+```
+
+Get your free Ollama API key at [ollama.com](https://ollama.com)
 
 ---
 
-## Setup
+### Approach 2 — Run Locally (your own machine, 100% free)
+
+Run the app on your own machine using a locally installed Ollama model — no internet needed, completely private.
+
+```env
+OPENAI_API_KEY=ollama
+OPENAI_BASE_URL=http://localhost:11434/v1
+MODEL_NAME=gpt-oss-safeguard:20b
+```
+
+---
+
+## Setup — Local
 
 ### 1. Clone the repo
 
@@ -58,15 +83,15 @@ cd news-summarizer
 ```bash
 # Using uv (recommended)
 uv init
-uv add flask requests beautifulsoup4 openai python-dotenv
+uv add flask requests beautifulsoup4 openai python-dotenv gunicorn
 
 # Or using pip
 pip install -r requirements.txt
 ```
 
-### 3. Configure environment
+### 3. Configure .env for local
 
-Create a `.env` file in the root folder:
+Create a `.env` file:
 
 ```env
 OPENAI_API_KEY=ollama
@@ -74,15 +99,13 @@ OPENAI_BASE_URL=http://localhost:11434/v1
 MODEL_NAME=gpt-oss-safeguard:20b
 ```
 
-Replace `MODEL_NAME` with whatever model you have. Check yours with:
+Replace `MODEL_NAME` with your model. Check yours with:
 
 ```bash
 ollama list
 ```
 
 ### 4. Start Ollama
-
-Make sure Ollama is running with your model:
 
 ```bash
 ollama run gpt-oss-safeguard:20b
@@ -94,11 +117,40 @@ ollama run gpt-oss-safeguard:20b
 # Using uv
 uv run main.py
 
-# Or using python
+# Or python
 python main.py
 ```
 
-Open your browser at `http://localhost:5000`
+Open `http://localhost:5000`
+
+---
+
+## Setup — Deploy to Render
+
+### 1. Push code to GitHub
+
+```bash
+git add .
+git commit -m "deploy to render"
+git push
+```
+
+### 2. Create new Web Service on Render
+
+```
+Build command:  pip install -r requirements.txt
+Start command:  gunicorn main:app
+```
+
+### 3. Add environment variables in Render dashboard
+
+```
+OPENAI_API_KEY  = your-ollama-api-key
+OPENAI_BASE_URL = https://api.ollama.ai/v1
+MODEL_NAME      = gpt-oss-20b-cloud
+```
+
+Render automatically handles Nginx, SSL, and HTTPS for you.
 
 ---
 
@@ -110,6 +162,7 @@ news-summarizer/
 ├── scraper.py            # Web scraping logic
 ├── .env                  # Environment variables (not committed)
 ├── requirements.txt      # Python dependencies
+├── screenshots/          # App screenshots for README
 └── templates/
     └── index.html        # Frontend UI
 ```
@@ -119,16 +172,16 @@ news-summarizer/
 ## How It Works
 
 ```
-Browser → Flask (port 5000) → scraper.py scrapes URL
-                            → text sent to Ollama (port 11434)
-                            → LLM generates summary
-                            → summary returned to browser
+Browser → Flask → scraper.py scrapes article URL
+                → cleaned text sent to LLM API
+                → LLM generates summary
+                → summary returned to browser
 ```
 
-1. User pastes a URL and selects summary style
-2. Flask scrapes the article using `requests` + `BeautifulSoup`
-3. Cleaned text is sent to local Ollama model
-4. Summary is returned and displayed in the browser
+1. User pastes a URL and picks a summary style
+2. Flask scrapes the page with `requests` + `BeautifulSoup`
+3. Cleaned text is sent to LLM (cloud or local)
+4. Summary is displayed in the browser
 
 ---
 
@@ -148,29 +201,20 @@ Browser → Flask (port 5000) → scraper.py scrapes URL
 - `https://en.wikipedia.org/wiki/Artificial_intelligence`
 - `https://en.wikipedia.org/wiki/Python_(programming_language)`
 - `https://en.wikipedia.org/wiki/Large_language_model`
+- `https://www.bbc.com/news`
 
 ---
 
-## Switching to OpenAI (optional)
+## Approach Comparison
 
-To use real OpenAI instead of local Ollama, update your `.env`:
-
-```env
-OPENAI_API_KEY=sk-your-real-key-here
-OPENAI_BASE_URL=
-MODEL_NAME=gpt-4o
-```
-
----
-
-## Local vs Cloud LLM
-
-|                 | Local (Ollama)      | Cloud (OpenAI) |
-| --------------- | ------------------- | -------------- |
-| Cost            | Free                | Paid per token |
-| Privacy         | 100% local          | Sent to OpenAI |
-| Speed           | Depends on hardware | Fast           |
-| Internet needed | No                  | Yes            |
+|                   | Local Ollama       | Render + Ollama API     |
+| ----------------- | ------------------ | ----------------------- |
+| Cost              | Free               | Free (Ollama free tier) |
+| Privacy           | 100% local         | Sent to Ollama API      |
+| Internet needed   | No                 | Yes                     |
+| Setup             | Install Ollama     | Push to GitHub          |
+| Access from phone | No                 | Yes                     |
+| Speed             | Depends on your PC | Fast                    |
 
 ---
 
